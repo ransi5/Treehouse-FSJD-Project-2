@@ -9,7 +9,7 @@ const studentList = document.querySelector('.page ul.student-list');
 const linkList = document.querySelector('div.pagination ul.link-list');
 // header varibale used to update search bar dynamically
 const header = document.querySelector('div.page header.header');
-let pageLink;
+let pageLink, listArr;
 let result = [];
 /*
 the `showPage` function
@@ -19,8 +19,9 @@ This function will create and insert/append the elements needed to display a "pa
 function showPage(list, page) {
   let startIndex = ( page * 9 ) - 9;
   let lastIndex = page * 9;
-  // conditonal statement sets last index to last item in array if its not a multiple of 9
+// conditonal statement sets last index to last item in array if its not a multiple of 9
   if (lastIndex >= list.length) { lastIndex = list.length }
+//the code below will empty the student list and set it up for new student list
   studentList.innerHTML = '';
 
   for (var i = startIndex; i < lastIndex; i++) {
@@ -84,8 +85,9 @@ This function will create and insert/append the elements needed for the paginati
 
 function addPagination(list) {
   let numofpages = Math.ceil(list.length / 9);
+// the code below will empty the linklist so that it can be repopulated with new search rexult pagination
   linkList.innerHTML = '';
-
+  listArr = list;
   var li = createElement('li');
   appendElement(linkList, li);
 
@@ -107,13 +109,8 @@ function addPagination(list) {
     var btn = createElement('button');
     btn.type = 'button';
     if (i === 1) {giveClassName(btn, 'active')};
-// conditional statement to test what data type to set onclick attribute for
-// this is required as interpolation does not work because the variable name has to print
-    if (list == data) {
-      btn.setAttribute('onclick', `showPage(data, ${i})`);
-    } else {
-      btn.setAttribute('onclick', `showPage(result, ${i})`);
-    }
+
+    btn.setAttribute('onclick', `showPage(listArr, ${i})`);
     btn.innerHTML = `${i}`;
     appendElement(li, btn);
   }
@@ -237,19 +234,21 @@ function searchName(){
       result.push(item);
     }
   });
-//this function will remove the "no result found statement" every time the search function is run if it exists
+//the code below will empty the student list and set it up for new student list
+  studentList.innerHTML = '';
+// the code below will empty the linklist so that it can be repopulated with new search rexult pagination
+  linkList.innerHTML = '';
+//this statement will remove the "no result found statement" every time the search function is run if it exists
 //it will also avoid build up of multiple no result found messages
   if (byId('result-message')) {
     byId('result-message').remove();
   }
-
+// this statement will display result of search
   if (result.length > 0) {
     showPage(result, 1);
     addPagination(result);
   } else {
     header.insertAdjacentHTML("afterend", "<h2 id='result-message' style='margin-bottom:20px;'>No matching Student found...try again</h2>");
-    showPage(data, 1);
-    addPagination(data);
   }
 }
 
